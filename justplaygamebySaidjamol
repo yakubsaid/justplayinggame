@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Justplaygame</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3/dist/phaser.min.js"></script>
+  <style>
+    body { margin: 0; overflow: hidden; }
+    canvas { display: block; }
+  </style>
+</head>
+<body>
+
+<script>
+  const config = {
+    type: Phaser.AUTO,
+    width: 800,
+    height: 600,
+    backgroundColor: '#2d2d2d',
+    scene: {
+      preload: preload,
+      create: create,
+      update: update
+    }
+  };
+
+  let score = 0;
+  let scoreText;
+
+  const game = new Phaser.Game(config);
+
+  function preload () {
+    this.load.image('logo', 'https://labs.phaser.io/assets/sprites/phaser3-logo.png');
+  }
+
+  function create () {
+    const logo = this.add.image(400, 150, 'logo');
+    scoreText = this.add.text(300, 400, 'Score: 0', { fontSize: '32px', fill: '#fff' });
+
+    logo.setInteractive();
+    logo.on('pointerdown', () => {
+      score += 10;
+      scoreText.setText('Score: ' + score);
+
+      // Send score to Telegram
+      if (window.TelegramGameProxy) {
+        TelegramGameProxy.postEvent("score", score);
+      }
+    });
+  }
+
+  function update () {}
+</script>
+
+</body>
+</html>
